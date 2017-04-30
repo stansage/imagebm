@@ -15,4 +15,4 @@ Change working directory to build
 Create VisualStudio solution
 `cmake -DCMAKE_BUILD_TYPE=Release ..\imagebm`
 Build binaries
-`msbuild imagebm.sln`
+`msbuild /t:Build /p:Configuration=Release imagebm.sln`
