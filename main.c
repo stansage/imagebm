@@ -15,13 +15,11 @@
 #include <sys/time.h>
 #endif
 
-uint64_t timestamp();
-
-int thread_proc( void * arg );
-
 int marker_level = 30;
 int blur_level = 5;
-//size_t marker_height = 20;
+
+uint64_t timestamp();
+int thread_proc( void * arg );
 
 int main( int argc, char * argv[] )
 {
@@ -82,23 +80,23 @@ int main( int argc, char * argv[] )
 
 uint64_t timestamp()
 {
+#ifdef WIN32
+    LARGE_INTEGER performance_count;
+    performance_count.QuadPart = 0;
+    QueryPerformanceCounter( & performance_count );
+    return performance_count.QuadPart;
+#else
     struct timeval now;
-    gettimeofday(&now, NULL);
-    return now.tv_sec * (uint64_t)1000000 + now.tv_usec;
+    gettimeofday( & now, NULL );
+    return now.tv_sec * ( uint64_t ) 1000000 + now.tv_usec;
+#endif
 }
-
-char* read_stdin(void)
-{
-    assert("not implemented" == NULL);
-    return NULL;
-}
-
 
 int thread_proc( void * arg )
 {
     double center_x = 0;
     double center_y = 0;
-    RECT * marker = ( RECT * ) calloc( 1, sizeof( RECT ) );
+    AREA * marker = ( AREA * ) calloc( 1, sizeof( AREA ) );
     IMG * img = imgproc_clone( ( IMG * ) arg );
     uint8_t * blur_pixels = ( uint8_t * ) calloc( blur_level * blur_level, sizeof( uint8_t ) );
     uint64_t now = timestamp();

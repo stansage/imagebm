@@ -19,7 +19,7 @@ file(GLOB ${PROJECT_NAME}_sources ${PROJECT_SOURCE_DIR}/*.c)
 set(TINYCTHREAD_DISABLE_TESTS OFF)
 add_subdirectory(tinycthread)
 
-add_executable(${PROJECT_NAME} ${${PROJECT_NAME}_sources} ${${PROJECT_NAME}_headers})
+add_executable(${PROJECT_NAME} ${${PROJECT_NAME}_sources} ${${PROJECT_NAME}_headers} README.md)
 add_dependencies(${PROJECT_NAME} tinycthread)
 target_link_libraries(${PROJECT_NAME} tinycthread)
 

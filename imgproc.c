@@ -32,7 +32,7 @@ int pixel_comparator( const void * a, const void * b )
     return * ( int * ) a - * ( int * ) b;
 }
 
-int marker_valid( RECT * marker )
+int marker_valid( AREA * marker )
 {
     if ( marker->x == 0 || marker->y == 0  )
     {
@@ -111,14 +111,14 @@ IMG * imgproc_clone( const IMG * src )
 }
 
 
-int imgproc_find_marker( const IMG * img, int marker_level, RECT * marker_area )
+int imgproc_find_marker( const IMG * img, int marker_level, AREA * marker_area )
 {
     int x;
     int y;
     int offset = 0;
 
     assert( marker_area != NULL );
-    memset( marker_area, 0, sizeof( RECT ) );
+    memset( marker_area, 0, sizeof( AREA ) );
 
     marker_area->x = img->width;
     marker_area->y = img->height;
@@ -162,7 +162,7 @@ int imgproc_find_marker( const IMG * img, int marker_level, RECT * marker_area )
 }
 
 
-int imgproc_find_center( const IMG * img, const RECT * area, int blur_level, uint8_t * blur_pixels, double * center_x, double * center_y )
+int imgproc_find_center( const IMG * img, const AREA * area, int blur_level, uint8_t * blur_pixels, double * center_x, double * center_y )
 {
     int i;
     int x;
