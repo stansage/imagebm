@@ -1,17 +1,13 @@
+#include "tinycthread.h"
 #include "bmpfile.h"
 #include "imgproc.h"
-#include "tinycthread.h"
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
 
-
-#ifdef WIN32
-#include <sys/types.h>
-#include <sys/timeb.h>
-#else
+#ifndef WIN32
 #include <sys/time.h>
 #endif
 
@@ -118,7 +114,7 @@ int thread_proc( void * arg )
     printf( "Finding marker..." );
     if ( imgproc_find_center( img, marker, blur_level, blur_pixels, & center_x, & center_y ) != 0 )
     {
-        fprintf( stderr, "imgproc_find_center( %d, ( %d, %d ) )",
+        fprintf( stderr, "imgproc_find_center( %d, ( %lf, %lf ) )",
                  blur_level, center_x, center_y );
         return 3;
     }
