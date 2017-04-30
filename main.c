@@ -30,14 +30,25 @@ int main( int argc, char * argv[] )
 
     for ( arg = 1; arg < argc; arg++ )
     {
-        if ( strcmp( argv[ arg ], "-t") == 0 && argc > arg + 1 )
+        if ( strcmp( argv[ arg ], "-h") == 0 || strcmp( argv[ arg ], "--help") == 0 )
         {
-            thread_count = atoi( argv[ arg + 1 ] );
-            arg++;
+            printf( "usage: imagebm [ -n 1 ] -i image.bmp | <BMP DATA>\n"
+                    "Options:\n\t-n thread count (default 1)\n\t-i input file\n" );
+            return 0;
         }
-        else if ( strcmp( argv[ arg ], "-f") == 0 && argc > arg + 1 )
+
+        if ( strcmp( argv[ arg ], "-i") == 0 && argc > arg + 1 )
         {
             image_path = argv[ arg + 1 ];
+            arg++;
+        }
+        else if ( strcmp( argv[ arg ], "-n") == 0 && argc > arg + 1 )
+        {
+            thread_count = atoi( argv[ arg + 1 ] );
+            if ( thread_count <= 0 )
+            {
+                thread_count = 1;
+            }
             arg++;
         }
     }
