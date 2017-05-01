@@ -11,11 +11,13 @@
 #include <sys/time.h>
 #endif
 
+int pass_count = 1000;
 int marker_level = 30;
 int blur_level = 5;
 
 uint64_t timestamp();
 int thread_proc( void * arg );
+
 
 int main( int argc, char * argv[] )
 {
@@ -33,11 +35,16 @@ int main( int argc, char * argv[] )
         if ( strcmp( argv[ arg ], "-h") == 0 || strcmp( argv[ arg ], "--help") == 0 )
         {
             printf( "usage: imagebm [ -n 1 ] -i image.bmp | <BMP DATA>\n"
-                    "Options:\n\t-n thread count (default 1)\n\t-i input file\n" );
+                    "Options:\n\t-n thread count (default 1)\n\t-i input file\n\t- time to run" );
             return 0;
         }
 
         if ( strcmp( argv[ arg ], "-i") == 0 && argc > arg + 1 )
+        {
+            image_path = argv[ arg + 1 ];
+            arg++;
+        }
+        else if ( strcmp( argv[ arg ], "-t") == 0 && argc > arg + 1 )
         {
             image_path = argv[ arg + 1 ];
             arg++;
@@ -101,42 +108,48 @@ uint64_t timestamp()
 
 int thread_proc( void * arg )
 {
-    double center_x = 0;
-    double center_y = 0;
-    AREA * marker = ( AREA * ) calloc( 1, sizeof( AREA ) );
-    IMG * img = imgproc_clone( ( IMG * ) arg );
-    uint8_t * blur_pixels = ( uint8_t * ) calloc( blur_level * blur_level, sizeof( uint8_t ) );
-    uint64_t now = timestamp();
+    int i;
+    double center_x;
+    double center_y;
+    AREA * marker;
+    IMG * img;
+    uint8_t * blur_pixels;
+    uint64_t now;
+    uint64_t total_time = 0;
 
-    if ( img == NULL ) {
-        return 1;
-    }
-
-    printf( "Finding marker..." );
-    if ( imgproc_find_marker( img, marker_level, marker ) != 0 )
+    for ( i = 0; i < pass_count; ++i )
     {
-        fprintf( stderr, "imgproc_find_marker( %d, ( %d, %d, %d, %d ) )",
-                 marker_level, marker->x, marker->y, marker->w, marker->h );
-        return 2;
-    }
-    printf( "Found marker for %llu microseconds\n", timestamp() - now );
-    now = timestamp();
+        marker = ( AREA * ) calloc( 1, sizeof( AREA ) );
+        img = imgproc_clone( ( IMG * ) arg );
+        blur_pixels = ( uint8_t * ) calloc( blur_level * blur_level, sizeof( uint8_t ) );
+        now = timestamp();
 
-    printf( "Finding marker..." );
-    if ( imgproc_find_center( img, marker, blur_level, blur_pixels, & center_x, & center_y ) != 0 )
-    {
-        fprintf( stderr, "imgproc_find_center( %d, ( %lf, %lf ) )",
-                 blur_level, center_x, center_y );
-        return 3;
+        if ( imgproc_find_marker( img, marker_level, marker ) != 0 )
+        {
+            fprintf( stderr, "imgproc_find_marker( %d, ( %d, %d, %d, %d ) )",
+                     marker_level, marker->x, marker->y, marker->w, marker->h );
+            return 2;
+        }
+
+        total_time += timestamp() - now;
+        now = timestamp();
+
+        if ( imgproc_find_center( img, marker, blur_level, blur_pixels, & center_x, & center_y ) != 0 )
+        {
+            fprintf( stderr, "imgproc_find_center( %d, ( %lf, %lf ) )",
+                     blur_level, center_x, center_y );
+            return 3;
+        }
+        total_time += timestamp() - now;
+
+        free( blur_pixels );
+        imgproc_destroy( img );
+        free( marker );
     }
-    printf( "Found center for %llu microseconds\n", timestamp() - now );
-    now = timestamp();
 
     printf( "Marker: { x: %d, y: %d, w: %d, h: %d }\n", marker->x, marker->y, marker->w, marker->h );
     printf( "Center: { x: %lf, y: %lf }\n", center_x, center_y );
-
-    imgproc_destroy( img );
-    free( marker );
+    printf( "Passes: %llu, Total time: %llu, Mean time: %llu\n", pass_count, total_time, total_time / pass_count );
 
     return 0;
 }
