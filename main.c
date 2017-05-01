@@ -35,7 +35,7 @@ int main( int argc, char * argv[] )
         if ( strcmp( argv[ arg ], "-h") == 0 || strcmp( argv[ arg ], "--help") == 0 )
         {
             printf( "usage: imagebm [ -n 1 ] -i image.bmp | <BMP DATA>\n"
-                    "Options:\n\t-n thread count (default 1)\n\t-i input file\n\t-p pass count\n" );
+                    "Options:\n\t-n thread count (default 1)\n\t-i input file\n\t-p pass count (default 1000)\n" );
             return 0;
         }
 
@@ -153,7 +153,7 @@ int thread_proc( void * arg )
 
     printf( "Marker: { x: %d, y: %d, w: %d, h: %d }\n", marker->x, marker->y, marker->w, marker->h );
     printf( "Center: { x: %lf, y: %lf }\n", center_x, center_y );
-    printf( "Passes: %llu, Total time: %llu, Mean time: %llu\n", pass_count, total_time, total_time / pass_count );
+    printf( "Passes: %lu, Total time: %lu, Mean time: %lu\n", pass_count, total_time, total_time / pass_count );
 
     return 0;
 }
