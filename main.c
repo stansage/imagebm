@@ -35,7 +35,7 @@ int main( int argc, char * argv[] )
         if ( strcmp( argv[ arg ], "-h") == 0 || strcmp( argv[ arg ], "--help") == 0 )
         {
             printf( "usage: imagebm [ -n 1 ] -i image.bmp | <BMP DATA>\n"
-                    "Options:\n\t-n thread count (default 1)\n\t-i input file\n\t- time to run" );
+                    "Options:\n\t-n thread count (default 1)\n\t-i input file\n\t-p pass count\n" );
             return 0;
         }
 
@@ -44,9 +44,13 @@ int main( int argc, char * argv[] )
             image_path = argv[ arg + 1 ];
             arg++;
         }
-        else if ( strcmp( argv[ arg ], "-t") == 0 && argc > arg + 1 )
+        else if ( strcmp( argv[ arg ], "-p") == 0 && argc > arg + 1 )
         {
-            image_path = argv[ arg + 1 ];
+            pass_count = atoi( argv[ arg + 1 ] );
+            if ( pass_count <= 0 )
+            {
+                pass_count = 1;
+            }
             arg++;
         }
         else if ( strcmp( argv[ arg ], "-n") == 0 && argc > arg + 1 )
